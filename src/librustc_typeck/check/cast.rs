@@ -597,6 +597,8 @@ impl<'a, 'tcx> CastCheck<'tcx> {
         use rustc_middle::ty::cast::CastTy::*;
         use rustc_middle::ty::cast::IntTy::*;
 
+        //dbg!("calling do_check", &self.expr_ty, self.cast_ty, (CastTy::from_ty(self.expr_ty), CastTy::from_ty(self.cast_ty)));
+
         let (t_from, t_cast) = match (CastTy::from_ty(self.expr_ty), CastTy::from_ty(self.cast_ty))
         {
             (Some(t_from), Some(t_cast)) => (t_from, t_cast),
@@ -640,6 +642,7 @@ impl<'a, 'tcx> CastCheck<'tcx> {
                             },
                             // array-ptr-cast
                             Ptr(mt) => {
+                                dbg!("calling check_ref_cast");
                                 self.check_ref_cast(fcx, TypeAndMut { mutbl, ty: inner_ty }, mt)
                             }
                             _ => Err(CastError::NonScalar),
@@ -786,6 +789,9 @@ impl<'a, 'tcx> CastCheck<'tcx> {
                         array_ptr_type,
                     )
                     });
+
+                // TODO: Remove this!
+                dbg!("enter demand_eqtype", &self.span, &ety, &m_cast.ty);
 
                 // this will report a type mismatch if needed
                 fcx.demand_eqtype(self.span, ety, m_cast.ty);

@@ -8,10 +8,10 @@ use std::mem::transmute;
 
 // rustc_typeck::check::cast contains documentation about when a cast `e as U` is 
 // valid, which we quote from below.
-
-fn main() {
+fn valid_cast_cases() {
     // We should see an error message for each transmute, and no error messages for
     // the casts, since the casts are the recommended fixes.
+
 
     // e is an integer and U is *U_0, while U_0: Sized; addr-ptr-cast
     let ptr_i32_transmute = unsafe {
@@ -63,3 +63,17 @@ fn main() {
     };
     let usize_from_fn_ptr = foo as *const usize;
 }
+
+type DCErrIn<'a> = &'a [i32; 1];
+type DCErrOut = *const u8;
+fn trigger_do_check_to_emit_error(in_param: DCErrIn<'_>) -> DCErrOut {
+    unsafe { transmute::<DCErrIn, DCErrOut>(in_param) }
+}
+
+type OtherErrIn<'a> = &'a i32;
+type OtherErrOut = *const u8;
+fn other(in_param: OtherErrIn<'_>) -> OtherErrOut {
+    unsafe { transmute::<OtherErrIn, OtherErrOut>(in_param) }
+}
+
+fn main() {}

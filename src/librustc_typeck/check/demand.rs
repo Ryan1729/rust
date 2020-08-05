@@ -71,6 +71,9 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {
 
     pub fn demand_eqtype(&self, sp: Span, expected: Ty<'tcx>, actual: Ty<'tcx>) {
         if let Some(mut err) = self.demand_eqtype_diag(sp, expected, actual) {
+            // TODO: Remove this!
+            dbg!((&sp, &expected, &actual));
+
             err.emit();
         }
     }
